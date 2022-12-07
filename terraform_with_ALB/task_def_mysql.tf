@@ -110,7 +110,7 @@ resource "aws_ecs_task_definition" "test" {
             "value": "100"
           }
         ],
-        "resourceRequirements": null,
+        "resourceRequirements": null, #
         "ulimits": null,
         "dnsServers": null,
         "mountPoints": [
