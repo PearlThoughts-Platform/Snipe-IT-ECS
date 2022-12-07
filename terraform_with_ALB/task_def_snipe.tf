@@ -17,7 +17,7 @@ resource "aws_ecs_task_definition" "snipe-main" {
         "secretOptions": null,
         "options": {
           "awslogs-group": "/ecs/snipe",
-          "awslogs-region": "ap-south-1",
+          "awslogs-region": "ap-souteast-1",
           "awslogs-stream-prefix": "ecs"
         }
       },
