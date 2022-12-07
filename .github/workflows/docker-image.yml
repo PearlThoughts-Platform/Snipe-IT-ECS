@@ -1,5 +1,5 @@
 ---
-name: "workflow"
+name: "install"
 on:
   # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   cd:
-    name: "Deployment"
+    name: "Deployment2"
     runs-on: "ubuntu-latest"
   #if: startsWith(github.ref, 'refs/tags/')
     steps:
@@ -27,22 +27,28 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      # - name: Build, tag, and push image to Amazon ECRs
-      #   id: build-image
-      #   env:
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     ECR_REPOSITORY: snipe
-      #     IMAGE_TAG: ${{ github.event.head_commit.message }}
-      #   run: |
-      #     echo $IMAGE_TAG
-      #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-      #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-      #     echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      - name: Build, tag, and push image to Amazon ECRs
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: snipe
+          IMAGE_TAG: ${{ github.event.head_commit.message }}
+        run: |
+          echo $IMAGE_TAG
+          
+          terraform init
+          terraform destroy -auto-approve -input=false
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
@@ -52,24 +58,19 @@ jobs:
           cd terraform_with_ALB
           terraform init
           
-
-      # - name: Terraform Validate
-      #   id: validate
-      #   run: |
-      #     cd terraform_with_ALB          
-      #     terraform validate -no-color
+      - name: Terraform Validate
+        id: validate
+        run: |
+          cd terraform_with_ALB          
+          terraform validate -no-color
               
-      # - name: Terraform Plan
-      #   id: plan
-      #   run: |
-      #     cd terraform_with_ALB
-      #     terraform plan -no-color -input=false
-      #   continue-on-error: true
-      # - name: Terraform Apply
-      #   run: |
-      #     cd terraform_with_ALB
-      #     terraform apply -auto-approve -input=false
-      - name: Terraform destroy
+      - name: Terraform Plan
+        id: plan
         run: |
           cd terraform_with_ALB
-          terraform destroy -auto-approve -input=false
+          terraform plan -no-color -input=false
+        continue-on-error: true
+      - name: Terraform Apply
+        run: |
+          cd terraform_with_ALB
+          terraform apply -auto-approve -input=false
