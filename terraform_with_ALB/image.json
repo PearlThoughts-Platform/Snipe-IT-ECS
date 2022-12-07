@@ -7,7 +7,7 @@
         "secretOptions": null,
         "options": {
           "awslogs-group": "/ecs/snipe",
-          "awslogs-region": "ap-souteast-1",
+          "awslogs-region": "ap-southeast-1",
           "awslogs-stream-prefix": "ecs"
         }
       },
