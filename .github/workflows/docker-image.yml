@@ -10,7 +10,7 @@ on:
 
 jobs:
   cd:
-    name: "Deployment"
+    name: "Deployment1"
     runs-on: "self-hosted"
   #if: startsWith(github.ref, 'refs/tags/')
     steps:
