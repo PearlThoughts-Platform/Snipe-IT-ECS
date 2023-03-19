@@ -21,4 +21,6 @@ jobs:
 
       - name: check var
         #id: vars
-        run: cat test.txt
+        run: |
+           echo "$Greeting
+           cat test.txt
