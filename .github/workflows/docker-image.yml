@@ -27,7 +27,7 @@ jobs:
 
       - name:  failed - Notify dedicated teams channel
         uses: jdcargile/ms-teams-notification@v1.3
-        if: always()
+        #if: always()
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           #ms-teams-webhook-uri:  https://pearlthoughts.webhook.office.com/webhookb2/12b57d0f-2450-4597-a3a0-c7852ec961fa@01539d20-c779-4da8-aca2-5c1d5a6fc8bb/IncomingWebhook/235ab391331545d389c68e0670c949aa/f3853cb6-48e6-45c8-bd71-f62997c84316
