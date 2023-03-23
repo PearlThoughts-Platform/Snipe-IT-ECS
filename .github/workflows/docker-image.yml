@@ -24,3 +24,39 @@ jobs:
         run: |
            echo "$Greeting
            cat test.txt
+
+   # Teams Deployment Alerts 
+
+  Teams-workflow-status:
+    if: always()
+    # if: failure()
+    name: Post Workflow Status To Teams
+    needs:
+      - cd
+    runs-on: ubuntu-latest
+    # actions.read permission is required.
+    # permissions:
+    #   actions: 'read'
+    steps:
+
+      - name: Notify dedicated teams channel
+        uses: jdcargile/ms-teams-notification@v1.3
+        if: always()
+        with:
+          github-token: ${{ github.token }} # this will use the runner's token.
+          #ms-teams-webhook-uri:  https://pearlthoughts.webhook.office.com/webhookb2/12b57d0f-2450-4597-a3a0-c7852ec961fa@01539d20-c779-4da8-aca2-5c1d5a6fc8bb/IncomingWebhook/235ab391331545d389c68e0670c949aa/f3853cb6-48e6-45c8-bd71-f62997c84316
+          ms-teams-webhook-uri: https://pearlthoughts.webhook.office.com/webhookb2/2ba26411-5156-4cf9-a749-4c9864d70b11@01539d20-c779-4da8-aca2-5c1d5a6fc8bb/IncomingWebhook/1962720c97c246638df3bf9222e5408c/3beb573c-1300-4798-bf75-e4ff50a487c6
+          notification-summary: "DEV Deployment triggered with commit ID: ${{ github.event.head_commit.id }} & Commit message: ${{ github.event.head_commit.message }} "
+          notification-color: 17a2b8
+          timezone: Asia/Kolkata
+
+      - name:  failed - Notify dedicated teams channel
+        uses: jdcargile/ms-teams-notification@v1.3
+        if: failure()
+        with:
+          github-token: ${{ github.token }} # this will use the runner's token.
+          #ms-teams-webhook-uri:  https://pearlthoughts.webhook.office.com/webhookb2/12b57d0f-2450-4597-a3a0-c7852ec961fa@01539d20-c779-4da8-aca2-5c1d5a6fc8bb/IncomingWebhook/235ab391331545d389c68e0670c949aa/f3853cb6-48e6-45c8-bd71-f62997c84316
+          ms-teams-webhook-uri: https://pearlthoughts.webhook.office.com/webhookb2/2ba26411-5156-4cf9-a749-4c9864d70b11@01539d20-c779-4da8-aca2-5c1d5a6fc8bb/IncomingWebhook/1962720c97c246638df3bf9222e5408c/3beb573c-1300-4798-bf75-e4ff50a487c6
+          notification-summary: "DEV Deployment triggered with commit ID: ${{ github.event.head_commit.id }} & Commit message: ${{ github.event.head_commit.message }} "
+          notification-color: 17a2b8
+          timezone: Asia/Kolkata
